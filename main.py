@@ -7,7 +7,7 @@ def main(page_url):
         base_url + page_url,
         headers={},
     )
-    print(response.content)
+    print(response.text)
 
     return response
 
