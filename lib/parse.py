@@ -26,16 +26,60 @@ def is_metadata(line):
     pattern_lat = r"[0-1]?[0-8]?[0-9]\s+[0-6]?[0-9]\.[0-9]\s+[NS]"  # Example: 42 50.0 N
     pattern_lon = r"[0-1]?[0-8]?[0-9]\s+[0-6]?[0-9]\.[0-9]\s+[EW]"  # Example: 144 49.9 E
 
+    patterns = [
+        pattern_cruise,
+        pattern_station,
+        pattern_station,
+        pattern_year,
+        pattern_month,
+        pattern_day,
+        pattern_hour,
+        pattern_minute,
+        pattern_lat,
+        pattern_lon
+    ]
     # Combine all patterns with spaces in between
-    pattern_metadata = (
-        rf"{pattern_cruise}\s+{pattern_station}\s+{pattern_station}\s+"
-        rf"{pattern_year}\s+{pattern_month}\s+{pattern_day}\s+"
-        rf"{pattern_hour}\s+{pattern_minute}\s+{pattern_lat}\s+{pattern_lon}"
-    )
-
-    return bool(re.match(pattern_metadata, line))
+    return all(re.search(pattern, line) for pattern in patterns)
 
 
+def metadata(line):
+    """
+    Returns given line if it is a metadata line.
+
+    Args:
+        line (str): The input line to check.
+
+    Returns:
+        str: line
+
+    Examples:
+        >>> metadata("TK8707         A01        A01    1987  7 18  17 40  42 50.0 N 144 49.9 E")
+        'TK8707         A01        A01    1987  7 18  17 40  42 50.0 N 144 49.9 E'
+        >>> metadata("TK8707         A01                                                                        .00  11.8280  32.7850  11.8252")
+        ''
+    """
+
+    return line if is_metadata(line) else ""
+
+def record(line):
+    """
+    Returns given line if it is NOT a metadata line.
+
+    Args:
+        line (str): The input line to check.
+
+    Returns:
+        str: line
+
+    Examples:
+        >>> record("TK8707         A01        A01    1987  7 18  17 40  42 50.0 N 144 49.9 E")
+        ''
+        >>> record("TK8707         A01                                                                        .00  11.8280  32.7850  11.8252")
+        'TK8707         A01                                                                        .00  11.8280  32.7850  11.8252'
+
+    """
+
+    return line if not is_metadata(line) else ""
 
 if __name__ == "__main__":
     import doctest
