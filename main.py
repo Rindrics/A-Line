@@ -2,6 +2,8 @@ from dlt.sources.helpers import requests
 from lib.parse import metadata, record
 import io
 import pandas as pd
+import dlt
+
 
 def main(page_url):
     base_url = "https://gist.githubusercontent.com/Rindrics/"
@@ -35,7 +37,7 @@ def main(page_url):
 
     df_meta = pd.read_csv(
         metadata_io,
-        delim_whitespace=True,
+        sep='\s+',
         header=None,
         names=[
             'cruise', 'station', '_station', 'year', 'month', 'day',
@@ -44,9 +46,9 @@ def main(page_url):
         ]
     )
 
-    record_meta = pd.read_csv(
+    df_record = pd.read_csv(
         record_io,
-        delim_whitespace=True,
+        sep='\s+',
         header=None,
         names=[
             'cruise', 'station', 'pressure', 'temerature',
@@ -54,9 +56,29 @@ def main(page_url):
         ]
     )
 
-    print(record_meta)
-    return None
+    # DLT
+    pipeline = dlt.pipeline(
+        pipeline_name="a_line",
+        destination="bigquery",
+        dataset_name="ocean_observations",
+        progress="log",
+    )
+
+    load_meta = pipeline.run(
+        df_meta,
+        table_name="metadata",
+    )
+
+    print(load_meta)
+
+
+    load_record = pipeline.run(
+        df_record,
+        table_name="records",
+    )
+
+    print(load_record)
+
 
 if __name__ == "__main__":
-    page_url = "689288da5d327f633a6d640ddec27009/raw/97de6556d3798d08f41ae09207077f594ec6a665/gistfile1.txt"
-    main(page_url)
+    main("689288da5d327f633a6d640ddec27009/raw/97de6556d3798d08f41ae09207077f594ec6a665/gistfile1.txt")

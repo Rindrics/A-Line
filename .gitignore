@@ -1,3 +1,5 @@
 env
 *_test.txt
 **/__pycache__
+.dlt/secrets.toml
+.env
