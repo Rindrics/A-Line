@@ -5,9 +5,47 @@ import pandas as pd
 import dlt
 from typing import Iterator, Dict, Any
 
+A_LINE_STATIONS = [
+    # ref: https://ocean.fra.go.jp/a-line/a-line_research.html
+    {'station_id': 'A01', 'lat_deg': 42, 'lat_min': 50.0, 'lon_deg': 144, 'lon_min': 50.0, 'depth': 99},
+    {'station_id': 'A02', 'lat_deg': 42, 'lat_min': 40.0, 'lon_deg': 144, 'lon_min': 55.0, 'depth': 400},
+    {'station_id': 'A25', 'lat_deg': 42, 'lat_min': 35.0, 'lon_deg': 144, 'lon_min': 57.5, 'depth': 1200},
+    {'station_id': 'A03', 'lat_deg': 42, 'lat_min': 30.0, 'lon_deg': 145, 'lon_min': 00.0, 'depth': 1780},
+    {'station_id': 'A35', 'lat_deg': 42, 'lat_min': 21.0, 'lon_deg': 145, 'lon_min': 04.5, 'depth': 2974},
+    {'station_id': 'A04', 'lat_deg': 42, 'lat_min': 15.0, 'lon_deg': 145, 'lon_min': 07.5, 'depth': 2950},
+    {'station_id': 'A45', 'lat_deg': 42, 'lat_min': 07.0, 'lon_deg': 145, 'lon_min': 11.3, 'depth': 3200},
+    {'station_id': 'A05', 'lat_deg': 42, 'lat_min': 00.0, 'lon_deg': 145, 'lon_min': 15.0, 'depth': 4000},
+    {'station_id': 'A55', 'lat_deg': 41, 'lat_min': 52.5, 'lon_deg': 145, 'lon_min': 18.8, 'depth': 4500},
+    {'station_id': 'A06', 'lat_deg': 41, 'lat_min': 45.0, 'lon_deg': 145, 'lon_min': 22.5, 'depth': 5280},
+    {'station_id': 'A07', 'lat_deg': 41, 'lat_min': 30.0, 'lon_deg': 145, 'lon_min': 30.0, 'depth': 7150},
+    {'station_id': 'A08', 'lat_deg': 41, 'lat_min': 15.0, 'lon_deg': 145, 'lon_min': 37.5, 'depth': 6320},
+    {'station_id': 'A09', 'lat_deg': 41, 'lat_min': 00.0, 'lon_deg': 145, 'lon_min': 45.0, 'depth': 5580},
+    {'station_id': 'A10', 'lat_deg': 40, 'lat_min': 45.0, 'lon_deg': 145, 'lon_min': 52.5, 'depth': 5280},
+    {'station_id': 'A11', 'lat_deg': 40, 'lat_min': 30.0, 'lon_deg': 146, 'lon_min': 00.0, 'depth': 5160},
+    {'station_id': 'A12', 'lat_deg': 40, 'lat_min': 15.0, 'lon_deg': 146, 'lon_min': 07.5, 'depth': 5250},
+    {'station_id': 'A13', 'lat_deg': 40, 'lat_min': 00.0, 'lon_deg': 146, 'lon_min': 15.0, 'depth': 4900},
+    {'station_id': 'A14', 'lat_deg': 39, 'lat_min': 45.0, 'lon_deg': 146, 'lon_min': 22.5, 'depth': 5170},
+    {'station_id': 'A15', 'lat_deg': 39, 'lat_min': 30.0, 'lon_deg': 146, 'lon_min': 30.0, 'depth': 5200},
+    {'station_id': 'A16', 'lat_deg': 39, 'lat_min': 15.0, 'lon_deg': 146, 'lon_min': 37.5, 'depth': 5210},
+    {'station_id': 'A17', 'lat_deg': 39, 'lat_min': 00.0, 'lon_deg': 146, 'lon_min': 45.0, 'depth': 5200},
+    {'station_id': 'A18', 'lat_deg': 38, 'lat_min': 45.0, 'lon_deg': 146, 'lon_min': 52.5, 'depth': 5200},
+    {'station_id': 'A19', 'lat_deg': 38, 'lat_min': 30.0, 'lon_deg': 147, 'lon_min': 00.0, 'depth': 5200},
+    {'station_id': 'A20', 'lat_deg': 38, 'lat_min': 15.0, 'lon_deg': 147, 'lon_min': 07.5, 'depth': 5200},
+    {'station_id': 'A21', 'lat_deg': 38, 'lat_min': 00.0, 'lon_deg': 147, 'lon_min': 15.0, 'depth': 5200},
+]
+
 @dlt.source
 def a_line_source(page_url: str):
     """CTD data of A-Line"""
+
+    @dlt.resource(
+        name="dim_stations",
+        write_disposition="replace",
+        primary_key=["station_id"]
+    )
+    def get_stations() -> Iterator[Dict[str, Any]]:
+        for station in A_LINE_STATIONS:
+            yield station
 
     @dlt.resource(
         name="dim_observations",
@@ -95,7 +133,7 @@ def a_line_source(page_url: str):
         for record in df.to_dict('records'):
             yield record
 
-    return [get_metadata, get_records]
+    return [get_stations, get_observations, get_records]
 
 
 def extract_data(page_url: str, data_type: str) -> str:
