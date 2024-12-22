@@ -97,6 +97,30 @@ def a_line_source(page_url: str):
         for obs in observations_df.to_dict('records'):
             yield obs
 
+    @dlt.resource(
+        name="fact_profiles",
+        write_disposition="replace",
+        primary_key=["observation_id", "pressure"]
+    )
+    def get_profiles() -> Iterator[Dict[str, Any]]:
+        profile_str = extract_data(page_url, data_type="profile")
+        profile_io = io.StringIO(profile_str)
+
+        profile_df = pd.read_csv(
+            profile_io,
+            sep='\s+',
+            header=None,
+            names=[
+                'cruise', 'station', 'pressure', 'temperature',
+                'salinity', 'potential_temp', 'density',
+            ]
+        )
+
+        profile_df['observation_id'] = profile_df['cruise'] + '_' + profile_df['station']
+
+        for profile in profile_df.to_dict('records'):
+            yield profile
+
     def get_metadata() -> pd.DataFrame:
         metadata_str = extract_data(page_url, data_type="metadata")
         metadata_io = io.StringIO(metadata_str)
@@ -112,28 +136,7 @@ def a_line_source(page_url: str):
             ]
         )
 
-    @dlt.resource(
-        name="records",
-        write_disposition="replace",
-        primary_key=["cruise", "station", "pressure"]
-    )
-    def get_records() -> Iterator[Dict[str, Any]]:
-        record_str = extract_data(page_url, data_type="record")
-        record_io = io.StringIO(record_str)
-
-        df = pd.read_csv(
-            record_io,
-            sep='\s+',
-            header=None,
-            names=[
-                'cruise', 'station', 'pressure', 'temerature',
-                'salinity', 'potential_temp', 'density',
-            ]
-        )
-        for record in df.to_dict('records'):
-            yield record
-
-    return [get_stations, get_observations, get_records]
+    return [get_stations, get_observations, get_profiles]
 
 
 def extract_data(page_url: str, data_type: str) -> str:
