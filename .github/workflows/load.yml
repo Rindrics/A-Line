@@ -1,14 +1,12 @@
 name: Load CTD Data to BigOuery
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
   schedule:
     - cron: '0 0 1 * *'  # JST 9:00 on 1st day of every month
+  workflow_dispatch
 
 jobs:
   run-pipeline:
