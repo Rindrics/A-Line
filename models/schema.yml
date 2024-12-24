@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: ocean_observations
+    database: "pj-l5u2"
+    schema: ocean_observations
+    tables:
+      - name: dim_stations
+      - name: dim_observations
+      - name: fact_profiles
