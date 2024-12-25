@@ -26,6 +26,10 @@ cubes:
 	type: number
 
     dimensions:
+      - name: profile_id
+	sql: _dlt_id
+	type: string
+
       - name: station
 	sql: station
 	type: string
