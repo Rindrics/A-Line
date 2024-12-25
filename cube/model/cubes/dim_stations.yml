@@ -1,0 +1,39 @@
+cubes:
+  - name: dim_stations
+    sql_table: ocean_observations.dim_stations
+
+    joins: []
+
+    dimensions:
+      - name: station_id
+        sql: station_id
+        type: string
+        primary_key: true
+
+      - name: lat_deg
+        sql: lat_deg
+        type: number
+
+      - name: lon_deg
+        sql: lon_deg
+        type: number
+
+      - name: depth
+        sql: depth
+        type: number
+
+      - name: lat_min
+        sql: lat_min
+        type: number
+
+      - name: lon_min
+        sql: lon_min
+        type: number
+
+    measures:
+      - name: count
+        type: count
+
+    pre_aggregations:
+      # Pre-aggregation definitions go here.
+      # Learn more in the documentation: https://cube.dev/docs/caching/pre-aggregations/getting-started
