@@ -4,42 +4,35 @@ cubes:
 
     joins: []
 
-    dimensions:
-      - name: cruise
-        sql: cruise
-        type: string
-
-      - name: station
-        sql: station
-        type: string
-
+    measures:
       - name: pressure
-        sql: pressure
-        type: number
+	sql: pressure
+	type: number
 
       - name: temperature
-        sql: temperature
-        type: number
+	sql: temperature
+	type: number
 
       - name: salinity
-        sql: salinity
-        type: number
+	sql: salinity
+	type: number
 
       - name: potential_temp
-        sql: potential_temp
-        type: number
+	sql: potential_temp
+	type: number
 
       - name: density
-        sql: density
-        type: number
+	sql: density
+	type: number
+
+    dimensions:
+      - name: station
+	sql: station
+	type: string
 
       - name: observation_id
-        sql: observation_id
-        type: string
-
-    measures:
-      - name: count
-        type: count
+	sql: observation_id
+	type: string
 
     pre_aggregations:
       # Pre-aggregation definitions go here.
