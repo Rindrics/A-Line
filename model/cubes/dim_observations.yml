@@ -1,0 +1,35 @@
+cubes:
+  - name: dim_observations
+    sql_table: ocean_observations.dim_observations
+
+    joins: []
+
+    dimensions:
+      - name: observation_id
+        sql: observation_id
+        type: string
+        primary_key: true
+
+      - name: latitude
+        sql: latitude
+        type: number
+
+      - name: longitude
+        sql: longitude
+        type: number
+
+      - name: station_id
+        sql: station_id
+        type: string
+
+      - name: observed_at
+        sql: observed_at
+        type: time
+
+    measures:
+      - name: count
+        type: count
+
+    pre_aggregations:
+      # Pre-aggregation definitions go here.
+      # Learn more in the documentation: https://cube.dev/docs/caching/pre-aggregations/getting-started

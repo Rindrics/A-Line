@@ -1,0 +1,46 @@
+cubes:
+  - name: fact_profiles
+    sql_table: ocean_observations.fact_profiles
+
+    joins: []
+
+    dimensions:
+      - name: cruise
+        sql: cruise
+        type: string
+
+      - name: station
+        sql: station
+        type: string
+
+      - name: pressure
+        sql: pressure
+        type: number
+
+      - name: temperature
+        sql: temperature
+        type: number
+
+      - name: salinity
+        sql: salinity
+        type: number
+
+      - name: potential_temp
+        sql: potential_temp
+        type: number
+
+      - name: density
+        sql: density
+        type: number
+
+      - name: observation_id
+        sql: observation_id
+        type: string
+
+    measures:
+      - name: count
+        type: count
+
+    pre_aggregations:
+      # Pre-aggregation definitions go here.
+      # Learn more in the documentation: https://cube.dev/docs/caching/pre-aggregations/getting-started
