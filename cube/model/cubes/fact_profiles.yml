@@ -29,6 +29,7 @@ cubes:
       - name: profile_id
         sql: _dlt_id
         type: string
+        primary_key: true
 
       - name: station
         sql: station
