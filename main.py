@@ -4,6 +4,7 @@ import io
 import pandas as pd
 import dlt
 from typing import Iterator, Dict, Any
+import hashlib
 
 A_LINE_STATIONS = [
     # ref: https://ocean.fra.go.jp/a-line/a-line_research.html
@@ -50,7 +51,8 @@ def a_line_source(page_url: str):
     @dlt.resource(
         name="dim_observations",
         write_disposition="replace",
-        primary_key=["observation_id"]
+        primary_key=["observation_id"],
+        columns={"observation_id": {"data_type": "text", "nullable": False}},
     )
     def get_observations() -> Iterator[Dict[str, Any]]:
         metadata_df = get_metadata()
@@ -100,7 +102,7 @@ def a_line_source(page_url: str):
     @dlt.resource(
         name="fact_profiles",
         write_disposition="replace",
-        primary_key=["observation_id", "pressure"]
+        columns={"profile_id": {"data_type": "text", "nullable": False}},
     )
     def get_profiles() -> Iterator[Dict[str, Any]]:
         profile_str = extract_data(page_url, data_type="profile")
@@ -118,7 +120,11 @@ def a_line_source(page_url: str):
 
         profile_df['observation_id'] = profile_df['cruise'] + '_' + profile_df['station']
 
-        for profile in profile_df.to_dict('records'):
+        records = profile_df.to_dict('records')
+        for profile in records:
+            # create primary key
+            hash_str = f"{profile['observation_id']}_{profile['pressure']}"
+            profile['profile_id'] = hashlib.md5(hash_str.encode()).hexdigest()
             yield profile
 
     def get_metadata() -> pd.DataFrame:
