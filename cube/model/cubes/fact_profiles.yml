@@ -27,7 +27,7 @@ cubes:
 
     dimensions:
       - name: profile_id
-        sql: _dlt_id
+        sql: profile_id
         type: string
         primary_key: true
 
