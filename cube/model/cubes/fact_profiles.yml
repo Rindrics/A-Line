@@ -31,10 +31,6 @@ cubes:
         type: string
         primary_key: true
 
-      - name: station
-        sql: station
-        type: string
-
       - name: observation_id
         sql: observation_id
         type: string
