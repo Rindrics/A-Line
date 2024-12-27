@@ -51,7 +51,8 @@ def a_line_source(page_url: str):
     @dlt.resource(
         name="dim_observations",
         write_disposition="replace",
-        primary_key=["observation_id"]
+        primary_key=["observation_id"],
+        columns={"observation_id": {"data_type": "text", "nullable": False}},
     )
     def get_observations() -> Iterator[Dict[str, Any]]:
         metadata_df = get_metadata()
@@ -101,6 +102,7 @@ def a_line_source(page_url: str):
     @dlt.resource(
         name="fact_profiles",
         write_disposition="replace",
+        columns={"profile_id": {"data_type": "text", "nullable": False}},
     )
     def get_profiles() -> Iterator[Dict[str, Any]]:
         profile_str = extract_data(page_url, data_type="profile")
