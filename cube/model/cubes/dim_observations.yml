@@ -2,7 +2,10 @@ cubes:
   - name: dim_observations
     sql_table: ocean_observations.dim_observations
 
-    joins: []
+    joins:
+      - name: fact_profiles
+        sql: "{CUBE}.observation_id = {fact_profiles}.observation_id"
+        relationship: one_to_many
 
     dimensions:
       - name: observation_id

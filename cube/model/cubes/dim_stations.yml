@@ -2,7 +2,10 @@ cubes:
   - name: dim_stations
     sql_table: ocean_observations.dim_stations
 
-    joins: []
+    joins:
+      - name: dim_observations
+        sql: "{CUBE}.station_id = {dim_observations}.station_id"
+        relationship: one_to_many
 
     dimensions:
       - name: station_id
