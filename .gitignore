@@ -3,3 +3,4 @@ env
 **/__pycache__
 .dlt/secrets.toml
 .env
+*.duckdb

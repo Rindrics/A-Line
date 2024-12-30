@@ -28,7 +28,4 @@ jobs:
     - name: Run pipeline
       run: python3 main.py
       env:
-        LOCATION: ${{ secrets.BIGQUERY_LOCATION }}
-        CREDENTIALS__CLIENT_EMAIL: ${{ secrets.GOOGLE_CLOUD_CLIENT_EMAIL }}
-        CREDENTIALS__PRIVATE_KEY: ${{ secrets.GOOGLE_CLOUD_PRIVATE_KEY }}
-        CREDENTIALS__PROJECT_ID: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
+        CREDENTIALS: data.duckdb
