@@ -5,6 +5,9 @@ import pandas as pd
 import dlt
 from typing import Iterator, Dict, Any
 import hashlib
+import duckdb
+import numpy as np
+
 
 A_LINE_STATIONS = [
     # ref: https://ocean.fra.go.jp/a-line/a-line_research.html
@@ -35,6 +38,10 @@ A_LINE_STATIONS = [
     {'station_id': 'A21', 'lat_deg': 38, 'lat_min': 00.0, 'lon_deg': 147, 'lon_min': 15.0, 'depth': 5200},
 ]
 
+
+def clean_float_values(df):
+   return df.replace([np.inf, -np.inf, np.nan], None)
+
 @dlt.source
 def a_line_source(page_url: str):
     """CTD data of A-Line"""
@@ -45,7 +52,8 @@ def a_line_source(page_url: str):
         primary_key=["station_id"]
     )
     def get_stations() -> Iterator[Dict[str, Any]]:
-        for station in A_LINE_STATIONS:
+        station_df = clean_float_values(pd.DataFrame(A_LINE_STATIONS))
+        for station in station_df.to_dict('records'):
             yield station
 
     @dlt.resource(
@@ -95,6 +103,7 @@ def a_line_source(page_url: str):
             'latitude', 'longitude'
         ]]
         observations_df = observations_df.rename(columns={'station': 'station_id'})
+        observations_df = clean_float_values(observations_df)
 
         for obs in observations_df.to_dict('records'):
             yield obs
@@ -120,8 +129,8 @@ def a_line_source(page_url: str):
 
         profile_df['observation_id'] = profile_df['cruise'] + '_' + profile_df['station']
 
-        records = profile_df.to_dict('records')
-        for profile in records:
+        profile_df = clean_float_values(profile_df)
+        for profile in profile_df.to_dict('records'):
             # create primary key
             hash_str = f"{profile['observation_id']}_{profile['pressure']}"
             profile['profile_id'] = hashlib.md5(hash_str.encode()).hexdigest()
@@ -171,7 +180,7 @@ def extract_data(page_url: str, data_type: str) -> str:
 def main():
     pipeline = dlt.pipeline(
         pipeline_name="a_line",
-        destination="bigquery",
+        destination="duckdb",
         dataset_name="ocean_observations",
         progress="log",
     )
